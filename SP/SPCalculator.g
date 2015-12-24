@@ -53,8 +53,6 @@ exp returns [SPTree tree] :
 			   		
 			   | oper=PLUS_MINUS exp1=exp  //allow extra plus or minus
 			   		{ $tree = new SPTree($oper.text);
-			   		SPTree zeroTree = new SPTree("0");
-			   		$tree.insertChild(zeroTree);
 			   		$tree.insertChild($exp1.tree); }
 			   		
 			  ;
@@ -68,3 +66,5 @@ MUL_DIV: '*' | '/';
 DOLLAR: '$';
 OPEN_PAREN: '(';
 CLOSE_PAREN: ')';
+MIN_MAX: 'max' | 'min';
+VAR: [a-z]+; //TODO fix with caps as well
