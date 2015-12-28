@@ -1,26 +1,54 @@
 /*
  * spHashTable.h
  *
- *  Created on: Dec 24, 2015
- *      Author: alexander
+ *  This struct represents a hash table, containing strings and
+ *  double values.
  */
 
 #ifndef SPHASHTABLE_H_
 #define SPHASHTABLE_H_
 
+#include <stdbool.h>
+
 //define struct SH_HASH in spHashTable.c
-#define struct SP_HASH* SP_Hashtable;
+typedef struct SP_HASH_TABLE* SP_HASH;
 
-//spHashCreate
+typedef enum SP_HASH_ERROR{
+	SUCCESS = 0,
+	FAILURE = -1,
+} SP_HASH_ERROR;
 
-//spHashDestroy
+/**
+ * bla
+ */
+SP_HASH spHashCreate(SP_HASH_ERROR* msg);
 
-//spHashGetSize
+/**
+ * bla
+ */
+void spHashDestroy(SP_HASH h, SP_HASH_ERROR* msg);
 
-//spHashInsert
+/**
+ * bla
+ */
+int spHashGetSize(SP_HASH h, SP_HASH_ERROR* msg);
 
-//spHashGetValue
+/**
+ * bla
+ */
+void spHashInsert(SP_HASH h, SP_HASH_ERROR* msg);
 
-//spHashDelete
+/**
+ * bla
+ */
+double spHashGetValue(SP_HASH h, SP_HASH_ERROR* msg);
+
+/**
+ * bla
+ *
+ * true = element found
+ * false = not found
+ */
+bool spHashDelete(SP_HASH h, SP_HASH_ERROR* msg);
 
 #endif /* SPHASHTABLE_H_ */
