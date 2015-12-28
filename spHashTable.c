@@ -49,6 +49,12 @@ int spHashGetSize(SP_HASH h){
 }
 
 void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
+	//check validity of args:
+	if(str==NULL || h==NULL){
+		if(msg!=NULL) {*msg=INVALID_ARG; };
+		return;
+	}
+
 	int hash_index = hash_str(str); //the hash of the string
 	SPListElement e = createElement(str, val); //create element
 	if(e==NULL){
@@ -71,12 +77,62 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 	}
 	h->size++;
 	destroyElement(e); //free it, because a copy is used.
+	if(msg!=NULL){ *msg = SUCCESS; };
 }
 
-double spHashGetValue(SP_HASH h, SP_HASH_ERROR* msg);
+double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
+	//check validity:
+	if(str==NULL || h==NULL){
+		if(msg!=NULL) {*msg=INVALID_ARG; };
+		return NULL;
+	}
 
-bool spHashDelete(SP_HASH h, SP_HASH_ERROR* msg);
+	int hash_index = str_hash(str); //calculate hash
+	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
+			curr!=NULL; curr=spListGetNext(h->l[hash_index])){
+		if(isElementStrEquals(curr, str)){
+			//found:
+			if(msg!=NULL){ *msg=SUCCESS; };
+			double* toRet = getElementValue(curr);
+			if(toRet == NULL){
+				if(msg!=NULL) {*msg=ALLOC_FAILED; };
+				return NULL;
+			}
+		}
+	}
+	//not found:
+	if(msg!=NULL) {*msg=NOT_FOUND_ELEMENT; };
+	return NULL;
+}
 
+void spHashDelete(SP_HASH h, char* str, SP_HASH_ERROR* msg){
+	//check validity of args:
+	if(str==NULL || h==NULL){
+		if(msg!=NULL) {*msg=INVALID_ARG; };
+		return;
+	}
+
+	int hash_index = str_hash(str);
+	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
+				curr!=NULL; curr=spListGetNext(h->l[hash_index])){
+		if(isElementStrEquals(curr, str)){ //found
+			if(spListRemoveCurrent(h->l[hash_index]) != SP_LIST_SUCCESS){
+				if(msg!=NULL) { *msg=UNKNOWN_FAILURE; };
+				return;
+			}
+			h->size--;
+			if(msg!=NULL) { *msg=SUCCESS; };
+			return;
+		}
+	}
+
+	//not found:
+	if(msg!=NULL) { *msg=NOT_FOUND_ELEMENT; };
+	return;
+}
+
+
+//"private" hash function:
 int hash_str(const char* s){
 	if(s == NULL){
 		return -1;

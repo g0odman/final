@@ -18,7 +18,7 @@ typedef enum SP_HASH_ERROR{
 	NOT_FOUND_ELEMENT = -1,
 	DUPLICATE_ELEMENT = -2,
 	ALLOC_FAILED = -3,
-	OUT_OF_ROOM = -4,
+	INVALID_ARG = -4,
 	UNKNOWN_FAILURE = -5,
 } SP_HASH_ERROR;
 
@@ -45,14 +45,11 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg);
 /**
  * bla
  */
-double spHashGetValue(SP_HASH h, SP_HASH_ERROR* msg);
+double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg);
 
 /**
  * bla
- *
- * true = element found
- * false = not found
  */
-bool spHashDelete(SP_HASH h, SP_HASH_ERROR* msg);
+void spHashDelete(SP_HASH h, char* str, SP_HASH_ERROR* msg);
 
 #endif /* SPHASHTABLE_H_ */
