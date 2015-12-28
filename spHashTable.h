@@ -15,7 +15,11 @@ typedef struct SP_HASH_TABLE* SP_HASH;
 
 typedef enum SP_HASH_ERROR{
 	SUCCESS = 0,
-	FAILURE = -1,
+	NOT_FOUND_ELEMENT = -1,
+	DUPLICATE_ELEMENT = -2,
+	ALLOC_FAILED = -3,
+	OUT_OF_ROOM = -4,
+	UNKNOWN_FAILURE = -5,
 } SP_HASH_ERROR;
 
 /**
@@ -26,17 +30,17 @@ SP_HASH spHashCreate(SP_HASH_ERROR* msg);
 /**
  * bla
  */
-void spHashDestroy(SP_HASH h, SP_HASH_ERROR* msg);
+void spHashDestroy(SP_HASH h);
 
 /**
  * bla
  */
-int spHashGetSize(SP_HASH h, SP_HASH_ERROR* msg);
+int spHashGetSize(SP_HASH h);
 
 /**
  * bla
  */
-void spHashInsert(SP_HASH h, SP_HASH_ERROR* msg);
+void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg);
 
 /**
  * bla
