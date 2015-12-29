@@ -45,7 +45,7 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg);
 /**
  * bla
  */
-double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg);
+double spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg);
 
 /**
  * bla

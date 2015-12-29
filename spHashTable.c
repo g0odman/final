@@ -86,11 +86,11 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 	if(msg!=NULL){ *msg = SUCCESS; };
 }
 
-double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
+double spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
 	//check validity:
 	if(str==NULL || h==NULL){
 		if(msg!=NULL) {*msg=INVALID_ARG; };
-		return NULL;
+		return 0;
 	}
 
 	int hash_index = hash_str(str); //calculate hash
@@ -102,13 +102,17 @@ double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
 			double* toRet = getElementValue(curr);
 			if(toRet == NULL){
 				if(msg!=NULL) {*msg=ALLOC_FAILED; };
-				return NULL;
+				return 0;
 			}
+			if(msg!=NULL) {*msg=SUCCESS; };
+			int val = *toRet;
+			free(toRet);
+			return val;
 		}
 	}
 	//not found:
 	if(msg!=NULL) {*msg=NOT_FOUND_ELEMENT; };
-	return NULL;
+	return 0;
 }
 
 void spHashDelete(SP_HASH h, char* str, SP_HASH_ERROR* msg){
