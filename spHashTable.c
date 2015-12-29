@@ -1,4 +1,6 @@
 #include "spHashTable.h"
+#include "SPListElement.h"
+#include "SPList.h"
 #include <stdlib.h>
 
 #define FIRST_PRIME 571
@@ -16,7 +18,7 @@ int hash_str(const char* s);
 
 SP_HASH spHashCreate(SP_HASH_ERROR* msg){
 	//allocate memory, and check allocation
-	SP_HASH toRet = (SP_HASH)malloc(sizeof(*SP_HASH));
+	SP_HASH toRet = (SP_HASH)malloc(sizeof(*toRet));
 	if(toRet==NULL){
 		if(msg!=NULL){*msg=ALLOC_FAILED;};
 		return NULL;
@@ -38,7 +40,7 @@ void spHashDestroy(SP_HASH h){
 	if(h == NULL){ return; };
 	//free lists:
 	for(int i=0; i<NUMBER_OF_ENTRIES; ++i){
-		spListDestroy(h->l[i]);
+		listDestroy(h->l[i]);
 	}
 	free(h);
 }
@@ -63,10 +65,10 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 	}
 
 	//if duplicate, change value:
-	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
-			curr!=NULL; curr=spListGetNext(h->l[hash_index])){
-		if(isElementStrEquals(curr, getElementstr(e))){
-			if(spsetELementValue(curr, val) != SP_ELEMENT_SUCCESS){
+	for(SPListElement curr=listGetFirst(h->l[hash_index]);
+			curr!=NULL; curr=listGetNext(h->l[hash_index])){
+		if(isElementStrEquals(curr, getElementStr(e))){
+			if(setELementValue(curr, val) != SP_ELEMENT_SUCCESS){
 				if(msg!=NULL){ *msg = UNKNOWN_FAILURE; };
 			} else {
 				if(msg!=NULL){ *msg = SUCCESS; };
@@ -75,7 +77,7 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 		}
 	}
 	//insert:
-	if(spListInsertFirst(h->l[hash_index], e) != SP_LIST_SUCCESS){
+	if(listInsertFirst(h->l[hash_index], e) != SP_LIST_SUCCESS){
 		if(msg!=NULL){ *msg = ALLOC_FAILED; };
 		return;
 	}
@@ -91,9 +93,9 @@ double* spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
 		return NULL;
 	}
 
-	int hash_index = str_hash(str); //calculate hash
-	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
-			curr!=NULL; curr=spListGetNext(h->l[hash_index])){
+	int hash_index = hash_str(str); //calculate hash
+	for(SPListElement curr=listGetFirst(h->l[hash_index]);
+			curr!=NULL; curr=listGetNext(h->l[hash_index])){
 		if(isElementStrEquals(curr, str)){
 			//found:
 			if(msg!=NULL){ *msg=SUCCESS; };
@@ -116,11 +118,11 @@ void spHashDelete(SP_HASH h, char* str, SP_HASH_ERROR* msg){
 		return;
 	}
 
-	int hash_index = str_hash(str);
-	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
-				curr!=NULL; curr=spListGetNext(h->l[hash_index])){
+	int hash_index = hash_str(str);
+	for(SPListElement curr=listGetFirst(h->l[hash_index]);
+				curr!=NULL; curr=listGetNext(h->l[hash_index])){
 		if(isElementStrEquals(curr, str)){ //found
-			if(spListRemoveCurrent(h->l[hash_index]) != SP_LIST_SUCCESS){
+			if(listRemoveCurrent(h->l[hash_index]) != SP_LIST_SUCCESS){
 				if(msg!=NULL) { *msg=UNKNOWN_FAILURE; };
 				return;
 			}

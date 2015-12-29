@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 //define struct SH_HASH in spHashTable.c
-typedef struct SP_HASH_TABLE* SP_HASH;
+typedef struct SP_HASH_TABLE *SP_HASH;
 
 typedef enum SP_HASH_ERROR{
 	SUCCESS = 0,

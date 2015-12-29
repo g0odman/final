@@ -32,7 +32,12 @@
 			} }while (0)
 
 bool TEST1(){
-	//TODO
+	//make hash table
+	SP_HASH_ERROR msg;
+	SP_HASH h = spHashCreate(&msg);
+	ASSERT_TRUE(h!=NULL && msg == SUCCESS);
+	ASSERT_TRUE(spHashGetSize(h) == 0);
+
 	return true;
 }
 
