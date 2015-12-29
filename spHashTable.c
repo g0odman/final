@@ -62,11 +62,15 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 		return;
 	}
 
-	//make sure no duplicates
+	//if duplicate, change value:
 	for(SPListElement curr=spListGetFirst(h->l[hash_index]);
 			curr!=NULL; curr=spListGetNext(h->l[hash_index])){
 		if(isElementStrEquals(curr, getElementstr(e))){
-			if(msg!=NULL){ *msg = DUPLICATE_ELEMENT; };
+			if(spsetELementValue(curr, val) != SP_ELEMENT_SUCCESS){
+				if(msg!=NULL){ *msg = UNKNOWN_FAILURE; };
+			} else {
+				if(msg!=NULL){ *msg = SUCCESS; };
+			}
 			return;
 		}
 	}
