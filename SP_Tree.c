@@ -1,5 +1,6 @@
 #include <string.h>
 #include "SP_Tree.h"
+#include "spHashTable.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -142,6 +143,12 @@ SP_TREE_TYPE getType(char *s){
 
 	//Check if it is a number
     if(strlen(s)!=1 || (s[0] >= '0' && s[0] <= '9')) { return NUMBER; }
+    if(strlen(s)!=1){
+        if(strcmp(s,"min")==0)
+            return MINIMUM;
+        if(strcmp(s,"max")==0)
+            return MAXIMUM;
+    }
 
     //return the correct value
     switch(s[0]) {
@@ -156,7 +163,7 @@ SP_TREE_TYPE getType(char *s){
         case '/'  :
              return DIVISION;
         default : /* Optional */
-             return UNKNOWN;
+             return VARIABLE;
     }
 }
 

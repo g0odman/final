@@ -1,6 +1,7 @@
 #ifndef SP_Aux_H_
 #define SP_Aux_H_
 #include "SP_Tree.h"
+#include "spHashTable.h"
 
 
 /**
@@ -27,7 +28,7 @@ void parse(char * line);
  * @return
  *              A SP_TREE representing the string.
  */
-SP_TREE *split(char *line);
+SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg);
 
 /**
  * Perform the given mathematical operation on the two input numbers.
@@ -74,7 +75,7 @@ bool isValid(SP_TREE_TYPE op, double x, double y);
  *          The result of the mathematical operation from the tree 
  *                  down.
  */
-double spTreeEval(SP_TREE *tree,bool *valid);
+double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR* msg);
 /**
  * Checks if the input string was an exit string
  *
@@ -95,5 +96,5 @@ bool isExit(char *line);
  * @param
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
-void quit(SP_TREE *tree, char *line,bool val);
+void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
 #endif /* SP_Aux_H_ */

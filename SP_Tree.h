@@ -22,7 +22,9 @@ typedef enum {
 	DIVISION,
 	DOLLAR,
 	NUMBER,
-	UNKNOWN
+    MINIMUM,
+    MAXIMUM,
+    VARIABLE
 } SP_TREE_TYPE;
 
 /**

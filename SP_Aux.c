@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "SP_Aux.h"
+#include "spHashTable.h"
 
 /**
  *  Main function, parses given input and calculates result. Prints
@@ -10,10 +11,13 @@
 void parse(char * line){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
+    SP_HASH_ERROR* msg = malloc(sizeof(SP_HASH_ERROR));
+    SP_HASH variables = spHashCreate(msg); // TODO check return value
+
     bool valid = true, works;
-    SP_TREE *root = split(line);
+    SP_TREE *root = split(line,variables,msg);
     //evaluate:
-    double out =  spTreeEval(root,&valid);
+    double out =  spTreeEval(root,&valid,variables,msg);
 
     if(valid)
         works = printf("res = %f\n", out) < 0;
@@ -22,27 +26,27 @@ void parse(char * line){
 
    //If works is set, the program failed 
     if(works){
-        quit(root,line,false);
+        quit(root,line,variables,msg,false);
     }
     //In case function was successful
     spTreeDestroy(root);
 }
 
-SP_TREE *split(char *line){
+SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
     //Value for node
     SP_TREE *new;
 
     if((new = spTreeCreate()) == NULL){
-        quit(new,line,true);
+        quit(new,line,variables,msg,true);
     }
     //j is the number of brackets seen, i is the current place
     int j = 1,i=1;
     while(j > 0){  //recursively parse children:
         if(line[i] == '(' && (++j) == 2){
         	//if closed brackets on child, parse it:
-            if(!spTreePush(new,split(line+i))){
+            if(!spTreePush(new,split(line+i,variables,msg))){
                 //If parsing failed, exit function and check print value
-                quit(new,line,printf("Unexpected error occured!") >= 0);
+                quit(new,line,variables,msg,printf("Unexpected error occured!") >= 0);
             }
         }
         //Go up one level
@@ -56,12 +60,12 @@ SP_TREE *split(char *line){
     length--;
 	char * temp = malloc(length+1);
     if(temp == NULL)
-        quit(new,line,true);
+        quit(new,line,variables,msg,true);
 	strncpy(temp,line +1,length);
     temp[length] = '\0';
     if(!setValue(new,temp)){
         free(line);
-        quit(new,temp,true);
+        quit(new,line,variables,msg,true);
     }
     free(temp);
 
@@ -83,6 +87,10 @@ double operate(double x, double y, SP_TREE_TYPE op, bool * valid){
             return  x / y;
         case DOLLAR:
             return ((y-x+1)*(y+x))/2;
+        case MAXIMUM:
+            return x>y ? x: y;
+        case MINIMUM:
+            return x<y ? x: y;
         default :
             return 0;
     }
@@ -94,25 +102,31 @@ bool isValid(SP_TREE_TYPE op, double x, double y){
         case PLUS:
         case MINUS:
         case MULTIPLICATION:
+        case MINIMUM:
+        case MAXIMUM:
             return  true;
         case DIVISION:
             return  y != 0;
         case DOLLAR:
             return y >= x;
-        default :
+        default:
             return false;
     }
 }
 
-double spTreeEval(SP_TREE *tree, bool * valid){
+double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR* msg){
 
     //leaf, return value:
     if(tree->type == NUMBER){
         return atoi(getRootStr(tree));
     }
 
+    if(tree->type == VARIABLE){
+        return spHashGetValue(variables,getRootStr(tree),msg);
+    }
+
     //otherwise, calculate op on first child, first:
-    double out = spTreeEval(tree->children[0],valid);
+    double out = spTreeEval(tree->children[0],valid,variables,msg);
 
     //In case of negative number
     if(tree->size ==1)
@@ -121,7 +135,7 @@ double spTreeEval(SP_TREE *tree, bool * valid){
     //then continue recursively calculating children,
     //and performing the op on them
     for(int i=1; i < tree->size; i++){
-        double temp = spTreeEval(tree->children[i],valid);
+        double temp = spTreeEval(tree->children[i],valid,variables,msg);
         out = operate(out,temp,tree->type,valid);
     }
 
@@ -132,9 +146,13 @@ bool isExit(char *line){
     return(strlen(line) == 5 &&strncmp(line,"(<>)", 4) == 0);
 }
 
-void quit(SP_TREE *tree, char *line,bool val){
+void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val){
     if(tree != NULL)
         spTreeDestroy(tree);
+    if(variables != NULL)
+        spHashDestroy(variables);
     free(line);
+    free(msg);
+
     exit(val ? EXIT_SUCCESS : EXIT_FAILURE );
 }
