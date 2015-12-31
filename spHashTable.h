@@ -23,32 +23,60 @@ typedef enum SP_HASH_ERROR{
 } SP_HASH_ERROR;
 
 /**
- * bla
+ * Returns a new hash table.
+ *
+ * If malloc fails, returns NULL. If msg==NULL, ignore. Otherwise
+ * set msg to the following:
+ * *msg = SUCCESS - if successful
+ * *msg = ALLOC_FAILED - if fails to allocate
+ *
  */
 SP_HASH spHashCreate(SP_HASH_ERROR* msg);
 
 /**
- * bla
+ * Frees all memory associated with the hash table. If h==NULL,
+ * do nothing.
  */
 void spHashDestroy(SP_HASH h);
 
 /**
- * bla
+ * Returns the number of elements currently in the hash table,
+ * or -1 if h==NULL.
  */
 int spHashGetSize(SP_HASH h);
 
 /**
- * bla
+ * Inserts a new element into the hash table h, with value val
+ * and with key str. If an element exists with key str, replaces
+ * its value with val.
+ *
+ * If msg != NULL, it will contain the following:
+ * INVALID_ARG - if h == NULL str == NULL
+ * ALLOC_FAILED - if fails to insert
+ * UNKNOWN_FAILURE - if an unknown failure occurs
+ * SUCCESS - if successful
  */
 void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg);
 
 /**
- * bla
+ * Returns the value of the element with key str in hash table h.
+ *
+ * If msg != NULL, it will contain the following values:
+ * INVALID_ARG - if h==NULL or str==NULL
+ * UNKNOWN_FAILURE - if a failure occurs.
+ * NOT_FOUND_ELEMENT - if no element with key str exists.
+ * SUCCESS - if successful
  */
 double spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg);
 
 /**
- * bla
+ * Deletes element with key str in hash table h.
+ *
+ * If msg != NULL, sets it to the following:
+ * INVALID_ARG - if h == NULL or str == NULL
+ * UNKNOWN_FAILURE - if an unknown error occurs
+ * ELEMENT_NOT_FOUND - if h contains no element with key str
+ * SUCCESS - if successful
  */
 void spHashDelete(SP_HASH h, char* str, SP_HASH_ERROR* msg);
 

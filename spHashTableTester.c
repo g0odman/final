@@ -75,7 +75,48 @@ bool TEST1(){
 	return true;
 }
 
+bool TEST2(){
+	char* str = "abcdefghijklmnopqrstuvwxyz";
+	double val;
+	SP_HASH_ERROR msg;
+	SP_HASH h = NULL;
+
+	h = spHashCreate(&msg);
+	ASSERT_TRUE(h!=NULL && msg==SUCCESS && spHashGetSize(h)==0);
+
+	for(int i=0; i<26; i++){
+		ASSERT_TRUE(spHashGetSize(h)==i);
+		spHashInsert(h, (str+i), i, &msg);
+		ASSERT_TRUE(msg==SUCCESS);
+	}
+	ASSERT_TRUE(spHashGetSize(h)==26);
+
+	val = spHashGetValue(h, (str+2), &msg);
+	ASSERT_TRUE(msg==SUCCESS && val == 2);
+	spHashInsert(h, (str+2), 28, &msg);
+	ASSERT_TRUE(msg == SUCCESS);
+	val = spHashGetValue(h, (str+2), &msg);
+	ASSERT_TRUE(msg==SUCCESS && val == 28);
+	spHashInsert(h, (str+2), 2, &msg);
+	ASSERT_TRUE(msg == SUCCESS);
+	val = spHashGetValue(h, (str+2), &msg);
+	ASSERT_TRUE(msg==SUCCESS && val == 2);
+
+	for(int i=25; i>=0; i--){
+		ASSERT_TRUE(spHashGetSize(h)==(i+1));
+		val = spHashGetValue(h, (str+i), &msg);
+		ASSERT_TRUE(msg==SUCCESS && val==i);
+		spHashDelete(h, (str+i), &msg);
+		ASSERT_TRUE(msg==SUCCESS);
+	}
+	ASSERT_TRUE(spHashGetSize(h)==0);
+
+	spHashDestroy(h);
+	return true;
+}
+
 int main(){
 	RUN_TEST(TEST1);
+	RUN_TEST(TEST2);
 	return 0;
 }

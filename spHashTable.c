@@ -78,7 +78,7 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 	}
 	//insert:
 	if(listInsertFirst(h->l[hash_index], e) != SP_LIST_SUCCESS){
-		if(msg!=NULL){ *msg = ALLOC_FAILED; };
+		if(msg!=NULL){ *msg = UNKNOWN_FAILURE; };
 		return;
 	}
 	h->size++;
@@ -92,16 +92,15 @@ double spHashGetValue(SP_HASH h, char* str, SP_HASH_ERROR* msg){
 		if(msg!=NULL) {*msg=INVALID_ARG; };
 		return 0;
 	}
-
+	//search:
 	int hash_index = hash_str(str); //calculate hash
 	for(SPListElement curr=listGetFirst(h->l[hash_index]);
 			curr!=NULL; curr=listGetNext(h->l[hash_index])){
 		if(isElementStrEquals(curr, str)){
 			//found:
-			if(msg!=NULL){ *msg=SUCCESS; };
 			double* toRet = getElementValue(curr);
 			if(toRet == NULL){
-				if(msg!=NULL) {*msg=ALLOC_FAILED; };
+				if(msg!=NULL) {*msg=UNKNOWN_FAILURE; };
 				return 0;
 			}
 			if(msg!=NULL) {*msg=SUCCESS; };
