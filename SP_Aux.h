@@ -1,7 +1,7 @@
 #ifndef SP_Aux_H_
 #define SP_Aux_H_
 #include "SP_Tree.h"
-#include "spHashTable.h"
+#include "SPHashTable.h"
 
 
 /**
@@ -97,4 +97,5 @@ bool isExit(char *line);
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
 void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
+void assign(char *line, SP_HASH variables,SP_HASH_ERROR *msg);
 #endif /* SP_Aux_H_ */

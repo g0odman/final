@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "SP_Aux.h"
-#include "spHashTable.h"
+#include "SPHashTable.h"
 
 /**
  *  Main function, parses given input and calculates result. Prints
@@ -11,13 +11,17 @@
 void parse(char * line){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
-    SP_HASH_ERROR* msg = malloc(sizeof(SP_HASH_ERROR));
-    SP_HASH variables = spHashCreate(msg); // TODO check return value
+    SP_HASH_ERROR msg;
+    SP_HASH variables = spHashCreate(&msg); // TODO check return value
 
     bool valid = true, works;
-    SP_TREE *root = split(line,variables,msg);
+    if(line[1] =='='){
+        assign(line, variables, &msg);
+        return;
+    }
+    SP_TREE *root = split(line,variables, &msg);
     //evaluate:
-    double out =  spTreeEval(root,&valid,variables,msg);
+    double out =  spTreeEval(root,&valid,variables,&msg);
 
     if(valid)
         works = printf("res = %f\n", out) < 0;
@@ -26,11 +30,15 @@ void parse(char * line){
 
    //If works is set, the program failed 
     if(works){
-        quit(root,line,variables,msg,false);
+        quit(root,line,variables, &msg,false);
     }
     //In case function was successful
     spTreeDestroy(root);
 }
+void assign(char *line, SP_HASH variables, SP_HASH_ERROR *msg){
+    printf("Assigned!\n");
+}
+
 
 SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
     //Value for node
@@ -68,8 +76,6 @@ SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
         quit(new,line,variables,msg,true);
     }
     free(temp);
-
-
     return new;
 }
 
@@ -122,20 +128,20 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
     }
 
     if(tree->type == VARIABLE){
-        return spHashGetValue(variables,getRootStr(tree),msg);
+        return spHashGetValue(variables, getRootStr(tree), msg);
     }
 
     //otherwise, calculate op on first child, first:
     double out = spTreeEval(tree->children[0],valid,variables,msg);
 
     //In case of negative number
-    if(tree->size ==1)
+    if(tree->size == 1)
         return operate(0,out,tree->type,valid);
 
     //then continue recursively calculating children,
     //and performing the op on them
     for(int i=1; i < tree->size; i++){
-        double temp = spTreeEval(tree->children[i],valid,variables,msg);
+        double temp = spTreeEval(tree->children[i], valid, variables, msg);
         out = operate(out,temp,tree->type,valid);
     }
 

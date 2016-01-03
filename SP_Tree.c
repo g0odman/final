@@ -1,6 +1,6 @@
 #include <string.h>
 #include "SP_Tree.h"
-#include "spHashTable.h"
+#include "SPHashTable.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -142,11 +142,11 @@ bool setValue(SP_TREE *tree,char *s){
 SP_TREE_TYPE getType(char *s){
 
 	//Check if it is a number
-    if(strlen(s)!=1 || (s[0] >= '0' && s[0] <= '9')) { return NUMBER; }
-    if(strlen(s)!=1){
-        if(strcmp(s,"min")==0)
+    if((s[0] >= '0' && s[0] <= '9')) { return NUMBER; }
+    if(strlen(s) != 1){
+        if(strcmp(s,"min") == 0)
             return MINIMUM;
-        if(strcmp(s,"max")==0)
+        if(strcmp(s,"max") == 0)
             return MAXIMUM;
     }
 
