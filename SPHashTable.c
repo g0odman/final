@@ -1,4 +1,4 @@
-#include "spHashTable.h"
+#include "SPHashTable.h"
 #include "SPListElement.h"
 #include "SPList.h"
 #include <stdlib.h>
