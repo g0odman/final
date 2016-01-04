@@ -26,7 +26,7 @@ package SP;
 
 //Valid statement is either a termination command || an arithmetical expression
 stat returns [SPTree tree] : e1=TERMINATION {$tree = new SPTree($e1.text);}
-			   | e2=exp {$tree = $e2.tree;}
+			   | e2=exp END {$tree = $e2.tree;}
                            ; 
 
 exp returns [SPTree tree] :
@@ -54,8 +54,18 @@ exp returns [SPTree tree] :
 			   | oper=PLUS_MINUS exp1=exp  //allow extra plus or minus
 			   		{ $tree = new SPTree($oper.text);
 			   		$tree.insertChild($exp1.tree); }
+			   | mmexp=min_max_exp COMMA exp2=exp CLOSE_PAREN
+			   		{ $tree = $mmexp.tree;
+			   		$tree.insertChild($exp2.tree); }
 			   		
 			  ;
+min_max_exp returns [SPTree tree] :
+			  mmexp=min_max_exp COMMA exp1=exp
+			  	{ $tree = $mmexp.tree;
+			  	$tree.insertChild($exp1.tree); }
+			  | mmoper=MIN_MAX OPEN_PAREN exp1=exp
+			  	{ $tree = new SPTree($mmoper.text);
+			  	$tree.insertChild($exp1.text); }
 
 // parser rules start with lowercase letters, lexer rules with uppercase
 TERMINATION: '<>';
@@ -66,5 +76,7 @@ MUL_DIV: '*' | '/';
 DOLLAR: '$';
 OPEN_PAREN: '(';
 CLOSE_PAREN: ')';
+COMMA: ',';
+END: ';';
 MIN_MAX: 'max' | 'min';
 VAR: [a-z]+; //TODO fix with caps as well
