@@ -18,6 +18,17 @@ void getVariables(int argc, char **argv, SP_HASH *variables){
                 spHashInsert(*variables,variable,val,&msg);
             }
             free(line);
+            fclose(fp);
         }
     }
+}
+bool toPrint(int argc, char **argv, char **filename){
+    for(int i =1; i < argc; i++){
+        if(argv[i][0] == '-' && argv[i][1] == 'o'){
+            *filename = malloc(strlen(argv[i+1]));
+            strcpy(*filename,argv[i+1]);
+            return true;
+        }
+    }
+    return false;
 }

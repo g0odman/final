@@ -8,38 +8,33 @@
  *  Main function, parses given input and calculates result. Prints
  *  all necsesary things.
  */
-void parse(char * line,SP_HASH variables){
+bool parse(char * line,SP_HASH variables, char *s){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
     SP_HASH_ERROR msg;
 
-    bool valid = true, works;
+    bool valid = true;
     SP_TREE *root = split(line,variables, &msg);
     //evaluate:
     if(root->type==ASSIGNMENT){
-        works = assign(root, variables, &msg);
+        assign(root, variables, &msg);
+        return false;
     }
-    else{
-        double out =  spTreeEval(root,&valid,variables,&msg);
+    double out =  spTreeEval(root,&valid,variables,&msg);
+    if(valid)
+        sprintf(s, "res = %f\n", out);
+    else
+        sprintf(s,"Invalid Result\n") ;
 
-        if(valid)
-            works = printf("res = %f\n", out) < 0;
-        else
-            works = printf("Invalid Result\n") < 0;
-    }
-   //If works is set, the program failed 
-    if(works){
-        quit(root,line,variables, &msg,false);
-    }
     //In case function was successful
     spTreeDestroy(root);
+    return true;
 }
-bool assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
+void assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
     bool valid = false;
     char *variable = getRootStr(root->children[0]);
     double value=  spTreeEval(root->children[1],&valid,variables, msg);
     spHashInsert(variables,variable, value, msg);
-    return valid;
 }
 
 
