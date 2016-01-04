@@ -3,14 +3,15 @@
 #include<stdlib.h>
 #include "SP_Aux.h"
 #include "SPHashTable.h"
-
+#include "SPFiles.h"
 #define MAX_LINE_LENGTH 1024
 
-int main(){
+int main(int argc, char ** argv){
 	
 	//allocate buffer to read to:
     char *line = (char*)malloc(MAX_LINE_LENGTH +1);
-    SP_HASH variables = spHashCreate(NULL); 
+    SP_HASH variables =getVariables(argc,argv);
+
     
     //main loop:
     while (fgets(line,MAX_LINE_LENGTH,stdin)!=NULL){
