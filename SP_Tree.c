@@ -162,6 +162,8 @@ SP_TREE_TYPE getType(char *s){
              return MULTIPLICATION;
         case '/'  :
              return DIVISION;
+        case '='  :
+             return ASSIGNMENT;
         default : /* Optional */
              return VARIABLE;
     }
