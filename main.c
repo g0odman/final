@@ -10,7 +10,8 @@ int main(int argc, char ** argv){
 	
 	//allocate buffer to read to:
     char *line = (char*)malloc(MAX_LINE_LENGTH +1);
-    SP_HASH variables =getVariables(argc,argv);
+    SP_HASH variables = spHashCreate(NULL);
+    getVariables(argc,argv,&variables);
 
     
     //main loop:
