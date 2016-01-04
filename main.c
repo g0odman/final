@@ -23,18 +23,18 @@ int main(int argc, char ** argv){
             break;
         if(parse(line,variables,out)){ //see SP_Aux
             if(p)
-                fprintf(fp,out);
+                fprintf(fp,"%s",out);
             else
-                printf(out);
+                printf("%s",out);
         }
     }
     free(line);
     free(out);
     spHashDestroy(variables);
-    fclose(fp);
-    if(p)
+    if(p){
+        fclose(fp);
         free(filename);
-    
+    } 
     if(printf("Exiting...\n") < 0)
         exit(EXIT_FAILURE);
     return 0;
