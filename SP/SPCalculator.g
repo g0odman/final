@@ -65,7 +65,8 @@ min_max_exp returns [SPTree tree] :
 			  	$tree.insertChild($exp1.tree); }
 			  | mmoper=MIN_MAX OPEN_PAREN exp1=exp
 			  	{ $tree = new SPTree($mmoper.text);
-			  	$tree.insertChild($exp1.text); }
+			  	$tree.insertChild($exp1.tree); }
+			  ;
 
 // parser rules start with lowercase letters, lexer rules with uppercase
 TERMINATION: '<>';
