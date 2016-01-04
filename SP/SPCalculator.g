@@ -48,15 +48,16 @@ exp returns [SPTree tree] :
 			   		$tree.insertChild($exp1.tree);
 			   		$tree.insertChild($exp2.tree); }
 			   		
-			   | num=NUMBER  //terminate with number
-			   		{ $tree = new SPTree($num.text); }
-			   		
 			   | oper=PLUS_MINUS exp1=exp  //allow extra plus or minus
 			   		{ $tree = new SPTree($oper.text);
 			   		$tree.insertChild($exp1.tree); }
+			   		
 			   | mmexp=min_max_exp COMMA exp2=exp CLOSE_PAREN
 			   		{ $tree = $mmexp.tree;
 			   		$tree.insertChild($exp2.tree); }
+			   			
+			   | num_val=NUM_OR_VAR  //terminate with number
+			   		{ $tree = new SPTree($num_val.text); }
 			   		
 			  ;
 min_max_exp returns [SPTree tree] :
@@ -65,11 +66,11 @@ min_max_exp returns [SPTree tree] :
 			  	$tree.insertChild($exp1.tree); }
 			  | mmoper=MIN_MAX OPEN_PAREN exp1=exp
 			  	{ $tree = new SPTree($mmoper.text);
-			  	$tree.insertChild($exp1.text); }
+			  	$tree.insertChild($exp1.tree); }
+			  ;
 
 // parser rules start with lowercase letters, lexer rules with uppercase
 TERMINATION: '<>';
-NUMBER: [0-9]+;
 WHITE_SPACE: [ \t\n\r]+ -> skip;
 PLUS_MINUS: '+' | '-';
 MUL_DIV: '*' | '/';
@@ -79,4 +80,4 @@ CLOSE_PAREN: ')';
 COMMA: ',';
 END: ';';
 MIN_MAX: 'max' | 'min';
-VAR: [a-z]+; //TODO fix with caps as well
+NUM_OR_VAR: [0-9]+ | [a-z]+; //TODO add caps as well
