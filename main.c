@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "SP_Aux.h"
+#include "SPHashTable.h"
 
 #define MAX_LINE_LENGTH 1024
 
@@ -9,15 +10,17 @@ int main(){
 	
 	//allocate buffer to read to:
     char *line = (char*)malloc(MAX_LINE_LENGTH +1);
+    SP_HASH variables = spHashCreate(NULL); 
     
     //main loop:
     while (fgets(line,MAX_LINE_LENGTH,stdin)!=NULL){
         if(isExit(line))//Exit code was recieved
             break;
-        parse(line); //see SP_Aux
+        parse(line,variables); //see SP_Aux
         
     }
     free(line);
+    spHashDestroy(variables);
     
     if(printf("Exiting...\n") < 0)
         exit(EXIT_FAILURE);

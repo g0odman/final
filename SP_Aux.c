@@ -8,26 +8,25 @@
  *  Main function, parses given input and calculates result. Prints
  *  all necsesary things.
  */
-void parse(char * line){
+void parse(char * line,SP_HASH variables){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
     SP_HASH_ERROR msg;
-    SP_HASH variables = spHashCreate(&msg); // TODO check return value
 
     bool valid = true, works;
-    if(line[1] =='='){
-        assign(line, variables, &msg);
-        return;
-    }
     SP_TREE *root = split(line,variables, &msg);
     //evaluate:
-    double out =  spTreeEval(root,&valid,variables,&msg);
+    if(root->type==ASSIGNMENT){
+        works = assign(root, variables, &msg);
+    }
+    else{
+        double out =  spTreeEval(root,&valid,variables,&msg);
 
-    if(valid)
-        works = printf("res = %f\n", out) < 0;
-    else
-        works = printf("Invalid Result\n") < 0;
-
+        if(valid)
+            works = printf("res = %f\n", out) < 0;
+        else
+            works = printf("Invalid Result\n") < 0;
+    }
    //If works is set, the program failed 
     if(works){
         quit(root,line,variables, &msg,false);
@@ -35,8 +34,12 @@ void parse(char * line){
     //In case function was successful
     spTreeDestroy(root);
 }
-void assign(char *line, SP_HASH variables, SP_HASH_ERROR *msg){
-    printf("Assigned!\n");
+bool assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
+    bool valid = false;
+    char *variable = getRootStr(root->children[0]);
+    double value=  spTreeEval(root->children[1],&valid,variables, msg);
+    spHashInsert(variables,variable, value, msg);
+    return valid;
 }
 
 
@@ -128,6 +131,8 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
     }
 
     if(tree->type == VARIABLE){
+        if(*msg == NOT_FOUND_ELEMENT)
+            printf("NOT FOUND NOT SURE");
         return spHashGetValue(variables, getRootStr(tree), msg);
     }
 

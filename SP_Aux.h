@@ -15,7 +15,7 @@
  * @return
  *              The result of the equation.
  */
-void parse(char * line);
+void parse(char * line, SP_HASH variables);
 
 /**
  * create SP_TREE from string
@@ -97,5 +97,5 @@ bool isExit(char *line);
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
 void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
-void assign(char *line, SP_HASH variables,SP_HASH_ERROR *msg);
+bool assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
 #endif /* SP_Aux_H_ */
