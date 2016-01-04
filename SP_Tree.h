@@ -24,6 +24,7 @@ typedef enum {
 	NUMBER,
     MINIMUM,
     MAXIMUM,
+    ASSIGNMENT,
     VARIABLE
 } SP_TREE_TYPE;
 
