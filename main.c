@@ -16,16 +16,13 @@ int main(int argc, char ** argv){
     SP_HASH variables = spHashCreate(NULL);
     getVariables(argc,argv,&variables);
     bool p = toPrint(argc,argv,&filename);
-    FILE *fp = fopen(filename,"w");
+    FILE *fp =p? fopen(filename,"w"):stdout;
     //main loop:
     while (fgets(line,MAX_LINE_LENGTH,stdin)!=NULL){
         if(isExit(line))//Exit code was recieved
             break;
         if(parse(line,variables,out)){ //see SP_Aux
-            if(p)
-                fprintf(fp,"%s",out);
-            else
-                printf("%s",out);
+            fprintf(fp,"%s",out);
         }
     }
     free(line);
