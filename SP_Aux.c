@@ -11,13 +11,14 @@
 bool parse(char * line,SP_HASH variables, char *s){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
-    SP_HASH_ERROR msg;
+    SP_HASH_ERROR msg = 0;
 
     bool valid = true;
     SP_TREE *root = split(line,variables, &msg);
     //evaluate:
     if(root->type==ASSIGNMENT){
         assign(root, variables, &msg);
+        spTreeDestroy(root);
         return false;
     }
     double out =  spTreeEval(root,&valid,variables,&msg);
@@ -27,7 +28,6 @@ bool parse(char * line,SP_HASH variables, char *s){
         sprintf(s,"Invalid Result\n") ;
 
     //In case function was successful
-    spTreeDestroy(root);
     return true;
 }
 void assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
@@ -126,8 +126,6 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
     }
 
     if(tree->type == VARIABLE){
-        if(*msg == NOT_FOUND_ELEMENT)
-            printf("NOT FOUND NOT SURE");
         return spHashGetValue(variables, getRootStr(tree), msg);
     }
 
