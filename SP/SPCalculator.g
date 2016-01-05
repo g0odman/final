@@ -27,10 +27,10 @@ package SP;
 //Valid statement is either a termination command || an arithmetical expression
 stat returns [SPTree tree] : e1=TERMINATION {$tree = new SPTree($e1.text);}
 			   | e2=exp END {$tree = $e2.tree;}
-			   | v=VAR eq=EQ e1=exp
+			   | v=VAR eq=EQ e3=exp
 			   		{ $tree = new SPTree($eq.text);
 			   		$tree.insertChild(new SPTree($v.text));
-			   		$tree.insertChild($e1.tree); }
+			   		$tree.insertChild($e3.tree); }
                            ; 
 
 exp returns [SPTree tree] :
@@ -85,6 +85,6 @@ COMMA: ',';
 END: ';';
 EQ: '=';
 MIN_MAX: 'max' | 'min';
-NUM_OR_VAR: [0-9]+ | [a-z]+; //TODO add caps as well
 VAR: [a-z]+;
+NUM_OR_VAR: [0-9]+ | [a-z]+; //TODO add caps as well
 
