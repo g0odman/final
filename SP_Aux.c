@@ -156,6 +156,7 @@ int compare(const void *a, const void *b){
 }
 double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
     double * arr = malloc(tree->size*sizeof(double));
+    double ans = 0;
     for(int i = 0; i < tree->size; i++){
         arr[i] = spTreeEval(tree->children[i],valid,variables,msg);
     }
@@ -163,20 +164,24 @@ double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg
         double sum = 0;
         for(int i =0; i< tree->size;i++)
             sum += arr[i];
-        return sum/tree->size;
+        ans = sum/tree->size;
     }
     else{//case MEDIAN:
         qsort(arr,tree->size,sizeof(double),compare);
         if(tree->size %2)
-            return arr[tree->size/2];
-        return (arr[tree->size/2] + arr[tree->size/2+1])/2;
+            ans = arr[tree->size/2];
+        ans = (arr[tree->size/2 -1] + arr[tree->size/2])/2;
     }
+    free(arr);
+    return ans;
 }
 bool cond(char *a){
-    return getType(a) == VARIABLE || a[0] == '(' || a[0] == ',' || a[0] == ')';
+    if(strlen(a) ==1 && (a[0] == ')' || a[0] == '(' || a[0] == ','))
+        return false;
+    return getType(a) == VARIABLE || getType(a) == NUMBER;
 }
 char * concat(char *a, char *b){
-    char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b)));
+    char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b) +1));
     strcpy(out,a);
     strcat(out,b);
     if(cond(a))
@@ -189,7 +194,7 @@ char *antiAntlr(SP_TREE *tree){
     if(tree==NULL)
         return (char *)calloc(1,sizeof(char));
     if(tree->type == VARIABLE || tree->type == NUMBER){
-        char *out = malloc(strlen(tree->value + 1)*sizeof(char));
+        char *out = malloc((strlen(tree->value)+1)*sizeof(char));
         strcpy(out,tree->value);
         return out;
     }
@@ -212,9 +217,8 @@ char *antiAntlr(SP_TREE *tree){
             out = concat(out,antiAntlr(tree->children[1]));
             out = concat(out,")");
             break;
-            }
+        }
     return out;
-
 }
 
 //Check that the function is the correct length and correct string
