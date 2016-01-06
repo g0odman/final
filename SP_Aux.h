@@ -98,4 +98,5 @@ bool isExit(char *line);
  */
 void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
 void assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
+double average(SP_TREE *tree, bool *valid,SP_HASH variables, SP_HASH_ERROR *msg);
 #endif /* SP_Aux_H_ */

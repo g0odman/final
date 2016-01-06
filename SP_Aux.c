@@ -4,6 +4,7 @@
 #include "SP_Aux.h"
 #include "SPHashTable.h"
 
+char *antiAntlr(SP_TREE *tree);
 /**
  *  Main function, parses given input and calculates result. Prints
  *  all necsesary things.
@@ -23,9 +24,9 @@ bool parse(char * line,SP_HASH variables, char *s){
     }
     double out =  spTreeEval(root,&valid,variables,&msg);
     if(valid)
-        sprintf(s, "res = %f\n", out);
+        sprintf(s, "%s\nres = %f\n",antiAntlr(root), out);
     else
-        sprintf(s,"Invalid Result\n") ;
+        sprintf(s,"%s\nInvalid Result\n",antiAntlr(root)) ;
 
     //In case function was successful
     return true;
@@ -126,16 +127,13 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
             return average(tree,valid,variables,msg);
         default:
             break;
-
-
-
     }
 
 
     //otherwise, calculate op on first child, first:
     double out = spTreeEval(tree->children[0],valid,variables,msg);
 
-    //In case of negative number
+    //In case of a unary operator
     if(tree->size == 1)
         return operate(0,out,tree->type,valid);
 
@@ -147,6 +145,12 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
     }
 
     return out;
+}
+int compare(const void *a, const void *b){
+    if(*((double*) a)>*((double*) b))
+        return 1;
+    else
+        return (int)(*(double *)b-*(double *)a);
 }
 double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
     double * arr = malloc(tree->size*sizeof(double));
@@ -160,17 +164,64 @@ double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg
         return sum/tree->size;
     }
     else{//case MEDIAN:
-        for(int i = 0; i< tree->size; i++){
-            int bigger = 0;
-            for(int j = 0; j < tree->size;i++){
-                if(arr[i] < arr[j])
-                    bigger++;
-            }
-            if(bigger == (int)tree->size/2)
-                return arr[i];
-        }
+        qsort(arr,tree->size,sizeof(double),compare);
+        if(tree->size %2)
+            return arr[tree->size/2];
+        return (arr[tree->size/2] + arr[tree->size/2+1])/2;
     }
-    return 0;
+}
+bool cond(char *a){
+    if(strlen(a) != 1)
+        return true;
+    switch(a[0]){
+        case '(':
+        case ')':
+        case ',':
+            return false;
+        default:
+            return true;
+    }
+}
+char * concat(char *a, char *b){
+    char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b)));
+    strcpy(out,a);
+    strcat(out,b);
+    if(cond(a))
+        free(a);
+    if(cond(b))
+        free(b);
+    return out;
+}
+char *antiAntlr(SP_TREE *tree){
+    if(tree==NULL)
+        return "";
+    if(tree->type == VARIABLE || tree->type == NUMBER){
+        char *out = malloc(strlen(tree->value + 1)*sizeof(char));
+        strcpy(out,tree->value);
+        return out;
+    }
+    if(tree->size ==1)
+        return concat(concat(concat("(",getRootStr(tree)),antiAntlr(tree->children[0])),")");
+    char * out = "";
+    switch(tree->type){
+        case AVERAGE:
+        case MINIMUM:
+        case MEDIAN:
+        case MAXIMUM:
+            out = concat(getRootStr(tree),"(");
+            for(int i = 0; i < tree->size;i++)
+                out =concat(out,concat(antiAntlr(tree->children[i]),","));
+            out[strlen(out)-1] = ')';
+            break;
+        default:
+            out = concat("(",antiAntlr(tree->children[0]));
+            out = concat(out,getRootStr(tree));
+            out = concat(out,antiAntlr(tree->children[1]));
+            out = concat(out,")");
+            break;
+            }
+    return out;
+
 }
 
 //Check that the function is the correct length and correct string

@@ -29,7 +29,7 @@ SP_Tree.o: SP_Tree.c SP_Tree.h
 	    gcc -std=c99 -Wall -Werror -pedantic-errors -c SP_Tree.c
 
 SP_Aux.o: SP_Aux.c SP_Aux.h SPHashTable.h
-	    gcc -std=c99 -Wall -Werror -pedantic-errors -c SP_Aux.c
+	    gcc -std=c99 -Wall -Werror -pedantic-errors -c -ggdb SP_Aux.c
 
 SPFiles.o: SPFiles.c SPFiles.h SPHashTable.h
 	    gcc -std=c99 -Wall -Werror -pedantic-errors -c SPFiles.c
