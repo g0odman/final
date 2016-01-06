@@ -31,10 +31,11 @@ bool parse(char * line,SP_HASH variables, char *s){
     return true;
 }
 void assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
-    bool valid = false;
+    bool valid = true;
     char *variable = getRootStr(root->children[0]);
     double value=  spTreeEval(root->children[1],&valid,variables, msg);
-    spHashInsert(variables,variable, value, msg);
+    if(valid)
+        spHashInsert(variables,variable, value, msg);
 }
 
 
@@ -103,31 +104,33 @@ double operate(double x, double y, SP_TREE_TYPE op, bool * valid){
 bool isValid(SP_TREE_TYPE op, double x, double y){
 	//test relevant case for op:
     switch(op){
-        case PLUS:
-        case MINUS:
-        case MULTIPLICATION:
-        case MINIMUM:
-        case MAXIMUM:
-            return  true;
         case DIVISION:
             return  y != 0;
         case DOLLAR:
-            return y >= x;
+            return y >= x && ((int) y == y) && ((int)x == x);
         default:
-            return false;
+            return true;
     }
 }
 
 double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR* msg){
 
     //leaf, return value:
-    if(tree->type == NUMBER){
-        return atoi(getRootStr(tree));
+    switch(tree->type){
+        case NUMBER:
+            return atoi(getRootStr(tree));
+        case VARIABLE:
+            return spHashGetValue(variables, getRootStr(tree), msg);
+        case AVERAGE:
+        case MEDIAN:
+            return average(tree,valid,variables,msg);
+        default:
+            break;
+
+
+
     }
 
-    if(tree->type == VARIABLE){
-        return spHashGetValue(variables, getRootStr(tree), msg);
-    }
 
     //otherwise, calculate op on first child, first:
     double out = spTreeEval(tree->children[0],valid,variables,msg);
@@ -145,6 +148,31 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
 
     return out;
 }
+double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
+    double * arr = malloc(tree->size*sizeof(double));
+    for(int i = 0; i < tree->size; i++){
+        arr[i] = spTreeEval(tree->children[i],valid,variables,msg);
+    }
+    if(tree->type ==AVERAGE){
+        double sum = 0;
+        for(int i =0; i< tree->size;i++)
+            sum += arr[i];
+        return sum/tree->size;
+    }
+    else{//case MEDIAN:
+        for(int i = 0; i< tree->size; i++){
+            int bigger = 0;
+            for(int j = 0; j < tree->size;i++){
+                if(arr[i] < arr[j])
+                    bigger++;
+            }
+            if(bigger == (int)tree->size/2)
+                return arr[i];
+        }
+    }
+    return 0;
+}
+
 //Check that the function is the correct length and correct string
 bool isExit(char *line){
     return(strlen(line) == 5 &&strncmp(line,"(<>)", 4) == 0);

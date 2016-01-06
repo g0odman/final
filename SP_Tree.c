@@ -148,6 +148,10 @@ SP_TREE_TYPE getType(char *s){
             return MINIMUM;
         if(strcmp(s,"max") == 0)
             return MAXIMUM;
+        if(strcmp(s,"median") == 0)
+            return MEDIAN;
+        if(strcmp(s,"average") == 0)
+            return AVERAGE;
     }
 
     //return the correct value
