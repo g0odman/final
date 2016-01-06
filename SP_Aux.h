@@ -97,6 +97,49 @@ bool isExit(char *line);
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
 void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
+/**
+ * If the input was an assignment and the expression to the right
+ * of the equals sign was valid, assigns the value returned to
+ * the variable.
+ *
+ * @param
+ *      SP_TREE *root - The root of the expression to evaluate.
+ * @param
+ * 		char *variables - The hash table containing the 
+ * 		variables assigned up to this point
+ * @param
+ *      SP_HASH_ERROR *msg - A pointer to a message.
+ */
 void assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
+/**
+ * If the operation was median or average, we need to perform 
+ * different operations than other operations, this function 
+ * returns either the median of the children or the average.
+ *
+ * @param
+ *      SP_TREE *tree - The root of the expression to evaluate.
+ * @param
+ *      bool * valid - A boolean checking whether the operations
+ *      up to this point were valid, and on exit contains that 
+ *      value for this operation.
+ * @param
+ * 		char *variables - The hash table containing the 
+ * 		variables assigned up to this point
+ * @param
+ *      SP_HASH_ERROR *msg - A pointer to a message.
+ * @return
+ *      The result of the operation.
+ *
+ */
 double average(SP_TREE *tree, bool *valid,SP_HASH variables, SP_HASH_ERROR *msg);
+/**
+ * Parses a lisp-tree and returns a mathematical expression.
+ *
+ * @param
+ *      SP_TREE *tree - The root of the expression to evaluate.
+ * @return
+ *      The mathematical expression in its normal form.
+ *
+ */
+char *antiAntlr(SP_TREE *tree);
 #endif /* SP_Aux_H_ */

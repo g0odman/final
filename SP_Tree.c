@@ -143,6 +143,7 @@ SP_TREE_TYPE getType(char *s){
 
 	//Check if it is a number
     if((s[0] >= '0' && s[0] <= '9')) { return NUMBER; }
+
     if(strlen(s) != 1){
         if(strcmp(s,"min") == 0)
             return MINIMUM;
@@ -152,6 +153,7 @@ SP_TREE_TYPE getType(char *s){
             return MEDIAN;
         if(strcmp(s,"average") == 0)
             return AVERAGE;
+        return VARIABLE;
     }
 
     //return the correct value

@@ -4,7 +4,6 @@
 #include "SP_Aux.h"
 #include "SPHashTable.h"
 
-char *antiAntlr(SP_TREE *tree);
 /**
  *  Main function, parses given input and calculates result. Prints
  *  all necsesary things.
@@ -33,10 +32,12 @@ bool parse(char * line,SP_HASH variables, char *s){
     //In case function was successful
     return true;
 }
+
 void assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
     bool valid = true;
     char *variable = getRootStr(root->children[0]);
     double value=  spTreeEval(root->children[1],&valid,variables, msg);
+    //Check that the function returned a valid result.
     if(valid)
         spHashInsert(variables,variable, value, msg);
 }
@@ -99,7 +100,7 @@ double operate(double x, double y, SP_TREE_TYPE op, bool * valid){
             return x>y ? x: y;
         case MINIMUM:
             return x<y ? x: y;
-        default :
+        default ://Shouldn't reach here.
             return 0;
     }
 }
@@ -111,7 +112,7 @@ bool isValid(SP_TREE_TYPE op, double x, double y){
             return  y != 0;
         case DOLLAR:
             return y >= x && ((int) y == y) && ((int)x == x);
-        default:
+        default: //Other operations are always valid
             return true;
     }
 }
@@ -148,12 +149,14 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
 
     return out;
 }
+//Auxillary function, used by the sort in median
 int compare(const void *a, const void *b){
     if(*((double*) a)>*((double*) b))
         return 1;
     else
         return (int)(*(double *)b-*(double *)a);
 }
+
 double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
     double * arr = malloc(tree->size*sizeof(double));
     double ans = 0;
@@ -175,11 +178,15 @@ double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg
     free(arr);
     return ans;
 }
+
+//Auxillary function, used to check if we should free in concat
 bool cond(char *a){
     if(strlen(a) ==1 && (a[0] == ')' || a[0] == '(' || a[0] == ','))
         return false;
     return getType(a) == VARIABLE || getType(a) == NUMBER;
 }
+//Auxillary function ofr antiAntlr, concatenates two strings and,
+//Depending on te result of cond, frees them
 char * concat(char *a, char *b){
     char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b) +1));
     strcpy(out,a);
@@ -190,14 +197,17 @@ char * concat(char *a, char *b){
         free(b);
     return out;
 }
+
 char *antiAntlr(SP_TREE *tree){
     if(tree==NULL)
         return (char *)calloc(1,sizeof(char));
+    //Make a fresh copy of the string
     if(tree->type == VARIABLE || tree->type == NUMBER){
         char *out = malloc((strlen(tree->value)+1)*sizeof(char));
         strcpy(out,tree->value);
         return out;
     }
+    //Unary operator, add parentheses
     if(tree->size ==1)
         return concat(concat(concat("(",getRootStr(tree)),antiAntlr(tree->children[0])),")");
     char * out = "";
