@@ -23,11 +23,13 @@ bool parse(char * line,SP_HASH variables, char *s){
         return false;
     }
     double out =  spTreeEval(root,&valid,variables,&msg);
+    char * expr = antiAntlr(root);
     if(valid)
-        sprintf(s, "%s\nres = %f\n",antiAntlr(root), out);
+        sprintf(s, "%s\nres = %f\n",expr, out);
     else
-        sprintf(s,"%s\nInvalid Result\n",antiAntlr(root)) ;
-
+        sprintf(s,"%s\nInvalid Result\n",expr);
+    free(expr);
+    spTreeDestroy(root);
     //In case function was successful
     return true;
 }
@@ -171,16 +173,7 @@ double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg
     }
 }
 bool cond(char *a){
-    if(strlen(a) != 1)
-        return true;
-    switch(a[0]){
-        case '(':
-        case ')':
-        case ',':
-            return false;
-        default:
-            return true;
-    }
+    return getType(a) == VARIABLE || a[0] == '(' || a[0] == ',' || a[0] == ')';
 }
 char * concat(char *a, char *b){
     char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b)));
@@ -194,7 +187,7 @@ char * concat(char *a, char *b){
 }
 char *antiAntlr(SP_TREE *tree){
     if(tree==NULL)
-        return "";
+        return (char *)calloc(1,sizeof(char));
     if(tree->type == VARIABLE || tree->type == NUMBER){
         char *out = malloc(strlen(tree->value + 1)*sizeof(char));
         strcpy(out,tree->value);
