@@ -112,7 +112,7 @@ void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool v
  * @param
  *      SP_HASH_ERROR *msg - A pointer to a message.
  */
-void assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
+bool assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
 
 /**
  * If the operation was median or average, we need to perform 

@@ -17,6 +17,7 @@ bool init(int argc,char **argv,SP_HASH *variables, FILE **fp){
     //check whether to print to file, or stdout:
     *fp = toPrint(argc,argv);
     if(*fp == NULL){
+        printf("Output file is read-only or cannot be created\n");
         return false;
     }
     return true;
@@ -25,22 +26,22 @@ bool init(int argc,char **argv,SP_HASH *variables, FILE **fp){
 
 bool isValidCommandLineArgumentsList(int argc, char** argv){
     if (argc % 2 == 0 || argc > 5){
-        printf("Invalid command line arguments, use [-v filename1] [-o filename2]");
+        printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
         return false;
     }
     for(int i = 1;i < argc; i+=2){
         if((strcmp(argv[i],"-v") != 0&&(strcmp(argv[i],"-o") != 0))){
-            printf("Invalid command line arguments, use [-v filename1] [-o filename2]");
+            printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
             return false;
         }
     }
     if(argc == 5){
         if(strcmp(argv[1] ,argv[3])==0){
-            printf("Invalid command line arguments, use [-v filename1] [-o filename2]");
+            printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
            return false;
         }
         if(strcmp(argv[2],argv[4]) ==0){
-            printf("Files must be different");
+            printf("Files must be different\n");
             return false;
         }
     }

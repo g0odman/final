@@ -15,31 +15,38 @@ bool parse(char * line,SP_HASH variables, char *s){
 
     bool valid = true;
     SP_TREE *root = split(line,variables, &msg);
+    //Generate string representation
     //evaluate:
     if(root->type==ASSIGNMENT){
-        assign(root, variables, &msg);
-        spTreeDestroy(root);
-        return false;
+        char *variable = getRootStr(root->children[0]);
+        valid = assign(root, variables, &msg);
+        if(valid)
+            sprintf(s, "%s = %.2f\n",variable,spHashGetValue(variables, variable, &msg));
+        else
+            sprintf(s,"Invalid Assignment\n");
     }
-    double out =  spTreeEval(root,&valid,variables,&msg);
-    char * expr = antiAntlr(root);
-    if(valid)
-        sprintf(s, "%s\nres = %f\n",expr, out);
-    else
-        sprintf(s,"%s\nInvalid Result\n",expr);
-    free(expr);
+    else{
+        double out =  spTreeEval(root,&valid,variables,&msg);
+        char * expr = antiAntlr(root);
+        if(valid)
+            sprintf(s, "%s\nres = %.2f\n",expr, out);
+        else
+            sprintf(s,"%s\nInvalid Result\n",expr);
+        free(expr);
+    }
     spTreeDestroy(root);
     //In case function was successful
     return true;
 }
 
-void assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
+bool assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
     bool valid = true;
     char *variable = getRootStr(root->children[0]);
     double value=  spTreeEval(root->children[1],&valid,variables, msg);
     //Check that the function returned a valid result.
     if(valid)
         spHashInsert(variables,variable, value, msg);
+    return valid;
 }
 
 
@@ -227,7 +234,7 @@ char *antiAntlr(SP_TREE *tree){
             out = concat(out,antiAntlr(tree->children[1]));
             out = concat(out,")");
             break;
-        }
+    }
     return out;
 }
 
