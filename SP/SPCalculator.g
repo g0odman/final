@@ -84,7 +84,7 @@ CLOSE_PAREN: ')';
 COMMA: ',';
 END: ';';
 EQ: '=';
-MIN_MAX: 'max' | 'min';
-VAR: [a-z]+;
-NUM_OR_VAR: [0-9]+ | [a-z]+; //TODO add caps as well
+MIN_MAX: 'max' | 'min' | 'median' | 'average';
+VAR: [a-zA-Z]+;
+NUM_OR_VAR: [0-9]+ | [a-zA-Z]+; //TODO add caps as well
 
