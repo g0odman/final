@@ -30,15 +30,21 @@ bool isValidCommandLineArgumentsList(int argc, char** argv){
 }
 void getVariables(int argc, char **argv, SP_HASH *variables){
     for(int i =1; i < argc; i++){
+    	//search for command that gives filename:
         if(argv[i][0] == '-' && argv[i][1] == 'v'){
+        	//if found, try and open file:
             FILE *fp = fopen(argv[i+1],"r");//Check if error
+            //read from file:
             char * line = (char *) malloc(MAX_LINE_SIZE+1);
             while(fgets(line,MAX_LINE_SIZE,fp) != NULL){
+            	//get variable name and value:
                 char *variable = strtok(line,"\r\t\n ");
                 strtok(NULL,"\r\t\n ");
                 char *value = strtok(NULL,"\r\t\n ");
+                //convert value to number
                 long val = strtol(value, NULL,10);
                 SP_HASH_ERROR msg;
+                //insert the var with the value into the hashtable:
                 spHashInsert(*variables,variable,val,&msg);
             }
             free(line);
@@ -46,6 +52,7 @@ void getVariables(int argc, char **argv, SP_HASH *variables){
         }
     }
 }
+
 bool toPrint(int argc, char **argv, char **filename){
     for(int i =1; i < argc; i++){
         if(argv[i][0] == '-' && argv[i][1] == 'o'){

@@ -85,6 +85,7 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
  *        A boolean indicating whether the strin was an exit code.
  */
 bool isExit(char *line);
+
 /**
  * Exits the program and frees all allocated memory while chcking
  * that exiting was indeed succesful
@@ -97,6 +98,7 @@ bool isExit(char *line);
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
 void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
+
 /**
  * If the input was an assignment and the expression to the right
  * of the equals sign was valid, assigns the value returned to
@@ -111,6 +113,7 @@ void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool v
  *      SP_HASH_ERROR *msg - A pointer to a message.
  */
 void assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
+
 /**
  * If the operation was median or average, we need to perform 
  * different operations than other operations, this function 
@@ -132,6 +135,7 @@ void assign(SP_TREE *root, SP_HASH variables,SP_HASH_ERROR *msg);
  *
  */
 double average(SP_TREE *tree, bool *valid,SP_HASH variables, SP_HASH_ERROR *msg);
+
 /**
  * Parses a lisp-tree and returns a mathematical expression.
  *
@@ -142,4 +146,5 @@ double average(SP_TREE *tree, bool *valid,SP_HASH variables, SP_HASH_ERROR *msg)
  *
  */
 char *antiAntlr(SP_TREE *tree);
+
 #endif /* SP_Aux_H_ */
