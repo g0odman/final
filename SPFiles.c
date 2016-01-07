@@ -3,7 +3,25 @@
 #include <string.h>
 #include "SPHashTable.h"
 #include "SP_Tree.h"
+#include "SPFiles.h"
 #define MAX_LINE_SIZE 200
+bool init(int argc,char **argv,SP_HASH *variables, FILE **fp){
+    if(!isValidCommandLineArgumentsList(argc,argv))
+        return false;
+    //create hashtable:
+    *variables = spHashCreate(NULL);
+    //read variables from file, if given:
+    if(!getVariables(argc,argv,variables))
+        return false;
+    
+    //check whether to print to file, or stdout:
+    *fp = toPrint(argc,argv);
+    if(*fp == NULL){
+        return false;
+    }
+    return true;
+
+}
 
 bool isValidCommandLineArgumentsList(int argc, char** argv){
     if (argc % 2 == 0 || argc > 5){
@@ -28,12 +46,17 @@ bool isValidCommandLineArgumentsList(int argc, char** argv){
     }
     return true;
 }
-void getVariables(int argc, char **argv, SP_HASH *variables){
+bool getVariables(int argc, char **argv, SP_HASH *variables){
     for(int i =1; i < argc; i++){
     	//search for command that gives filename:
         if(argv[i][0] == '-' && argv[i][1] == 'v'){
         	//if found, try and open file:
             FILE *fp = fopen(argv[i+1],"r");//Check if error
+            if(fp ==NULL){
+                printf("Variable init file doesn't exist or is not readable\n");
+                spHashDestroy(*variables);
+                return false;
+            }
             //read from file:
             char * line = (char *) malloc(MAX_LINE_SIZE+1);
             while(fgets(line,MAX_LINE_SIZE,fp) != NULL){
@@ -49,17 +72,17 @@ void getVariables(int argc, char **argv, SP_HASH *variables){
             }
             free(line);
             fclose(fp);
-        }
-    }
-}
-
-bool toPrint(int argc, char **argv, char **filename){
-    for(int i =1; i < argc; i++){
-        if(argv[i][0] == '-' && argv[i][1] == 'o'){
-            *filename = malloc(strlen(argv[i+1]));
-            strcpy(*filename,argv[i+1]);//error
             return true;
         }
     }
-    return false;
+    return true;
+}
+
+FILE *toPrint(int argc, char **argv){
+    for(int i =1; i < argc; i++){
+        if(argv[i][0] == '-' && argv[i][1] == 'o'){
+            return fopen(argv[i+1],"w");
+        }
+    }
+    return stdout;
 }
