@@ -16,21 +16,27 @@ int main(int argc, char ** argv){
 	//allocate buffer to read and write to:
     char *line = (char*)malloc(MAX_LINE_LENGTH +1);
     char *out = (char*) malloc(MAX_OUT_LINE+1);
+    if(line ==NULL || out == NULL){ //malloc failed
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
     //main loop:
     while (fgets(line,MAX_LINE_LENGTH,stdin)!=NULL){
         if(isExit(line))//exit, if exit code was recieved
             break;
-        if(parse(line,variables,out)){ //parses line, see SP_Aux
-            fprintf(fp,"%s",out);
-        }
+        parse(line,variables,out); //parses line, see SP_Aux
+        if(fprintf(fp,"%s",out) < 0)
+            exit(EXIT_FAILURE);
     }
+    if(fprintf(fp,"Exiting...\n") < 0)
+        exit(EXIT_FAILURE);
+
+    if(fp != stdout)
+        fclose(fp);
     //free all memory:
     free(line);
     free(out);
     spHashDestroy(variables);
-    fclose(fp);
 
-    if(printf("Exiting...\n") < 0)
-        exit(EXIT_FAILURE);
     return 0;
 }

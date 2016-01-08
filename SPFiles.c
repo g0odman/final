@@ -26,22 +26,26 @@ bool init(int argc,char **argv,SP_HASH *variables, FILE **fp){
 
 bool isValidCommandLineArgumentsList(int argc, char** argv){
     if (argc % 2 == 0 || argc > 5){
-        printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
+        if(printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n") <0)
+            exit(EXIT_FAILURE);
         return false;
     }
     for(int i = 1;i < argc; i+=2){
         if((strcmp(argv[i],"-v") != 0&&(strcmp(argv[i],"-o") != 0))){
-            printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
+            if(printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n")<0)
+                exit(EXIT_FAILURE);
             return false;
         }
     }
     if(argc == 5){
         if(strcmp(argv[1] ,argv[3])==0){
-            printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n");
+            if(printf("Invalid command line arguments, use [-v filename1] [-o filename2]\n")<0)
+                exit(EXIT_FAILURE);
            return false;
         }
         if(strcmp(argv[2],argv[4]) ==0){
-            printf("Files must be different\n");
+            if(printf("Files must be different\n")<0)
+                exit(EXIT_FAILURE);
             return false;
         }
     }
@@ -54,12 +58,17 @@ bool getVariables(int argc, char **argv, SP_HASH *variables){
         	//if found, try and open file:
             FILE *fp = fopen(argv[i+1],"r");//Check if error
             if(fp ==NULL){
-                printf("Variable init file doesn't exist or is not readable\n");
+                if(printf("Variable init file doesn't exist or is not readable\n")<0)
+                    exit(EXIT_FAILURE);
                 spHashDestroy(*variables);
                 return false;
             }
             //read from file:
             char * line = (char *) malloc(MAX_LINE_SIZE+1);
+            if(line == NULL){//malloc failure
+                printf("Unexpected error occured!\n");
+                exit(EXIT_FAILURE);
+            }
             while(fgets(line,MAX_LINE_SIZE,fp) != NULL){
             	//get variable name and value:
                 char *variable = strtok(line,"\r\t\n ");

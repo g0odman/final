@@ -14,17 +14,18 @@
 SP_TREE* spTreeCreate() {
 	
     //allocate pointer:
-    SP_TREE *s;
-    if((s = (SP_TREE*)malloc(sizeof(SP_TREE)))==NULL)
-        return NULL;
+    SP_TREE *s = (SP_TREE*)malloc(sizeof(SP_TREE));
+    if(s == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
     
     //initialize:
-    s->children = malloc(sizeof(SP_TREE *)*MAX_CHILD_NUM);
-    if(s->children ==NULL){
-        free(s);
-        return NULL;
+    s->children = calloc(MAX_CHILD_NUM,sizeof(SP_TREE *));
+    if(s->children == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
     }
-    memset(s->children, 0, MAX_CHILD_NUM); //set to NULL
     s->value = NULL;
     s->size = 0;
     return s;
@@ -119,8 +120,10 @@ bool setValue(SP_TREE *tree,char *s){
 	//copy string:
     if(s == NULL || strlen(s)==0)
         return false;
-    if((tree->value = malloc(strlen(s)+1)) == NULL)
-        return false;
+    if((tree->value = malloc(strlen(s)+1)) == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
     strcpy(tree->value,s);
 
     //update type:

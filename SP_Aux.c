@@ -8,7 +8,7 @@
  *  Main function, parses given input and calculates result. Prints
  *  all necsesary things.
  */
-bool parse(char * line,SP_HASH variables, char *s){
+void parse(char * line,SP_HASH variables, char *s){
 	//check whether exit command:
     //make tree and validate that they were succesfull:
     SP_HASH_ERROR msg = 0;
@@ -36,7 +36,6 @@ bool parse(char * line,SP_HASH variables, char *s){
     }
     spTreeDestroy(root);
     //In case function was successful
-    return true;
 }
 
 bool assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
@@ -44,18 +43,24 @@ bool assign(SP_TREE *root, SP_HASH variables, SP_HASH_ERROR *msg){
     char *variable = getRootStr(root->children[0]);
     double value=  spTreeEval(root->children[1],&valid,variables, msg);
     //Check that the function returned a valid result.
-    if(valid)
+    if(valid){
         spHashInsert(variables,variable, value, msg);
+        if(*msg != SUCCESS){
+            printf("Unexpected error occured!\n");
+            exit(EXIT_FAILURE);
+        }
+    }
     return valid;
 }
 
 
 SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
     //Value for node
-    SP_TREE *new;
+    SP_TREE *new = spTreeCreate();
 
-    if((new = spTreeCreate()) == NULL){
-        quit(new,line,variables,msg,true);
+    if(new == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
     }
     //j is the number of brackets seen, i is the current place
     int j = 1,i=1;
@@ -64,7 +69,7 @@ SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
         	//if closed brackets on child, parse it:
             if(!spTreePush(new,split(line+i,variables,msg))){
                 //If parsing failed, exit function and check print value
-                quit(new,line,variables,msg,printf("Unexpected error occured!") >= 0);
+                quit(new,line,variables,printf("Unexpected error occured!") >= 0);
             }
         }
         //Go up one level
@@ -77,13 +82,15 @@ SP_TREE *split(char *line,SP_HASH variables, SP_HASH_ERROR* msg){
     while(line[length] != '(' && line[length] != ')') { length++; }
     length--;
 	char * temp = malloc(length+1);
-    if(temp == NULL)
-        quit(new,line,variables,msg,true);
+    if(temp == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
 	strncpy(temp,line +1,length);
     temp[length] = '\0';
     if(!setValue(new,temp)){
         free(line);
-        quit(new,line,variables,msg,true);
+        quit(new,line,variables,true);
     }
     free(temp);
     return new;
@@ -126,12 +133,16 @@ bool isValid(SP_TREE_TYPE op, double x, double y){
 
 double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR* msg){
 
+    double out = 0;
     //leaf, return value:
     switch(tree->type){
         case NUMBER:
             return atoi(getRootStr(tree));
-        case VARIABLE:
-            return spHashGetValue(variables, getRootStr(tree), msg);
+        case VARIABLE: 
+            out = spHashGetValue(variables, getRootStr(tree), msg);
+            if(*msg != SUCCESS)
+                *valid = false;
+            return out; 
         case AVERAGE:
         case MEDIAN:
             return average(tree,valid,variables,msg);
@@ -141,7 +152,7 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
 
 
     //otherwise, calculate op on first child, first:
-    double out = spTreeEval(tree->children[0],valid,variables,msg);
+    out = spTreeEval(tree->children[0],valid,variables,msg);
 
     //In case of a unary operator
     if(tree->size == 1)
@@ -165,12 +176,19 @@ int compare(const void *a, const void *b){
 }
 
 double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
+    if(tree->size ==1)
+        return spTreeEval(tree->children[0],valid,variables,msg);
     double * arr = malloc(tree->size*sizeof(double));
+    if(arr ==NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
+
     double ans = 0;
     for(int i = 0; i < tree->size; i++){
         arr[i] = spTreeEval(tree->children[i],valid,variables,msg);
     }
-    if(tree->type ==AVERAGE){
+    if(tree->type == AVERAGE){
         double sum = 0;
         for(int i =0; i< tree->size;i++)
             sum += arr[i];
@@ -196,6 +214,10 @@ bool cond(char *a){
 //Depending on te result of cond, frees them
 char * concat(char *a, char *b){
     char *out = (char *)calloc(1,sizeof(char)*(strlen(a)+strlen(b) +1));
+    if(out == NULL){
+        printf("Unexpected error occured!\n");
+        exit(EXIT_FAILURE);
+    }
     strcpy(out,a);
     strcat(out,b);
     if(cond(a))
@@ -207,16 +229,17 @@ char * concat(char *a, char *b){
 
 char *antiAntlr(SP_TREE *tree){
     if(tree==NULL)
-        return (char *)calloc(1,sizeof(char));
+        return "";
     //Make a fresh copy of the string
     if(tree->type == VARIABLE || tree->type == NUMBER){
         char *out = malloc((strlen(tree->value)+1)*sizeof(char));
+        if(out ==NULL){
+            printf("Unexpected error occured!\n");
+            exit(EXIT_FAILURE);
+        }
         strcpy(out,tree->value);
         return out;
     }
-    //Unary operator, add parentheses
-    if(tree->size ==1)
-        return concat(concat(concat("(",getRootStr(tree)),antiAntlr(tree->children[0])),")");
     char * out = "";
     switch(tree->type){
         case AVERAGE:
@@ -229,10 +252,15 @@ char *antiAntlr(SP_TREE *tree){
             out[strlen(out)-1] = ')';
             break;
         default:
-            out = concat("(",antiAntlr(tree->children[0]));
-            out = concat(out,getRootStr(tree));
-            out = concat(out,antiAntlr(tree->children[1]));
-            out = concat(out,")");
+            //Unary operator, add parentheses
+            if(tree->size ==1)
+                out =  concat(concat(concat("(",getRootStr(tree)),antiAntlr(tree->children[0])),")");
+            else{
+                out = concat("(",antiAntlr(tree->children[0]));
+                out = concat(out,getRootStr(tree));
+                out = concat(out,antiAntlr(tree->children[1]));
+                out = concat(out,")");
+            }
             break;
     }
     return out;
@@ -243,13 +271,12 @@ bool isExit(char *line){
     return(strlen(line) == 5 &&strncmp(line,"(<>)", 4) == 0);
 }
 
-void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val){
+void quit(SP_TREE *tree, char *line, SP_HASH variables, bool val){
     if(tree != NULL)
         spTreeDestroy(tree);
     if(variables != NULL)
         spHashDestroy(variables);
-    free(line);
-    free(msg);
-
+    if(line != NULL)
+        free(line);
     exit(val ? EXIT_SUCCESS : EXIT_FAILURE );
 }

@@ -9,13 +9,17 @@
  *
  *
  * @param
- * 		string line - An input line, check if it is valid.
+ * 		char *line - An input line, check if it is valid.
  * 				If so then parse it and print result, else
  * 				print error.
- * @return
- *              The result of the equation.
+ * @param 
+ * 	        SP_HASH variables - the current variables hash 
+ * 	            table.
+ * @param 
+ *       char * out - A string to write the output to.
+ * 	    
  */
-bool parse(char * line, SP_HASH variables,char *out);
+void parse(char * line, SP_HASH variables,char *out);
 
 /**
  * create SP_TREE from string
@@ -24,7 +28,9 @@ bool parse(char * line, SP_HASH variables,char *out);
  * @param
  * 		string line - An input line, split it according to 
  * 				LISP style brackets.
- * 				print error.
+ * @param 
+ * 	        SP_HASH variables - the current variables hash 
+ * 	            table.
  * @return
  *              A SP_TREE representing the string.
  */
@@ -97,7 +103,7 @@ bool isExit(char *line);
  * @param
  *      bool val - A boolean indicating whehter or not exiting was successful.
  */
-void quit(SP_TREE *tree, char *line,SP_HASH variables, SP_HASH_ERROR* msg,bool val);
+void quit(SP_TREE *tree, char *line, SP_HASH variables, bool val);
 
 /**
  * If the input was an assignment and the expression to the right
