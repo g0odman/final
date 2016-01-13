@@ -17,17 +17,17 @@ void parse(char * line,SP_HASH variables, char *s){
     SP_TREE *root = split(line,variables, &msg);
     //Generate string representation
     //evaluate:
+    char * expr = antiAntlr(root);
     if(root->type==ASSIGNMENT){
         char *variable = getRootStr(root->children[0]);
         valid = assign(root, variables, &msg);
         if(valid)
-            sprintf(s, "%s = %.2f\n",variable,spHashGetValue(variables, variable, &msg));
+            sprintf(s, "%s\n%s = %.2f\n",expr,variable,spHashGetValue(variables, variable, &msg));
         else
             sprintf(s,"Invalid Assignment\n");
     }
     else{
         double out =  spTreeEval(root,&valid,variables,&msg);
-        char * expr = antiAntlr(root);
         if(valid)
             sprintf(s, "%s\nres = %.2f\n",expr, out);
         else
@@ -240,13 +240,14 @@ char *antiAntlr(SP_TREE *tree){
         strcpy(out,tree->value);
         return out;
     }
-    char * out = "";
+    char * out = "(";
     switch(tree->type){
         case AVERAGE:
         case MINIMUM:
         case MEDIAN:
         case MAXIMUM:
-            out = concat(getRootStr(tree),"(");
+            out = concat(out,getRootStr(tree));
+            out = concat(out,"(");
             for(int i = 0; i < tree->size;i++)
                 out =concat(out,concat(antiAntlr(tree->children[i]),","));
             out[strlen(out)-1] = ')';
@@ -254,15 +255,15 @@ char *antiAntlr(SP_TREE *tree){
         default:
             //Unary operator, add parentheses
             if(tree->size ==1)
-                out =  concat(concat(concat("(",getRootStr(tree)),antiAntlr(tree->children[0])),")");
+                out =  concat(concat(concat(out,getRootStr(tree)),antiAntlr(tree->children[0])),")");
             else{
-                out = concat("(",antiAntlr(tree->children[0]));
+                out = concat(out,antiAntlr(tree->children[0]));
                 out = concat(out,getRootStr(tree));
                 out = concat(out,antiAntlr(tree->children[1]));
-                out = concat(out,")");
             }
             break;
     }
+    out = concat(out,")");
     return out;
 }
 

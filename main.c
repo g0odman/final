@@ -28,7 +28,7 @@ int main(int argc, char ** argv){
         if(fprintf(fp,"%s",out) < 0)
             exit(EXIT_FAILURE);
     }
-    if(fprintf(fp,"Exiting...\n") < 0)
+    if(fprintf(fp,"(<>)\nExiting...\n") < 0)
         exit(EXIT_FAILURE);
 
     if(fp != stdout)
