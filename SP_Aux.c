@@ -24,7 +24,7 @@ void parse(char * line,SP_HASH variables, char *s){
         if(valid)
             sprintf(s, "%s\n%s = %.2f\n",expr,variable,spHashGetValue(variables, variable, &msg));
         else
-            sprintf(s,"Invalid Assignment\n");
+            sprintf(s,"%s\nInvalid Assignment\n",expr);
     }
     else{
         double out =  spTreeEval(root,&valid,variables,&msg);
@@ -159,7 +159,6 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
         return operate(0,out,tree->type,valid);
 
     //then continue recursively calculating children,
-    //and performing the op on them
     for(int i=1; i < tree->size; i++){
         double temp = spTreeEval(tree->children[i], valid, variables, msg);
         out = operate(out,temp,tree->type,valid);
