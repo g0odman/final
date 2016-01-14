@@ -153,4 +153,13 @@ double average(SP_TREE *tree, bool *valid,SP_HASH variables, SP_HASH_ERROR *msg)
  */
 char *antiAntlr(SP_TREE *tree);
 
+/**
+ * If needed, adds bracket to expression.
+ *
+ * @param
+ *      char *s - expression to bracket.
+ *
+ */
+void bracket(char * s);
+
 #endif /* SP_Aux_H_ */

@@ -33,5 +33,5 @@ SPFiles.o: SPFiles.c SPFiles.h SPHashTable.h
 
 clean:
 	cd SP; make clean
-	rm -fr SPList.o SPListElement.o SPHashTable.o SP_Aux.o SP_Files.o main.o SP_Tree.o
+	rm -fr SPList.o SPListElement.o SPHashTable.o SP_Aux.o SP_Files.o main.o SP_Tree.o SPFiles.o
 	
