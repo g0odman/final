@@ -26,7 +26,7 @@ package SP;
 
 //Valid statement is either a termination command || an arithmetical expression
 stat returns [SPTree tree] : e1=TERMINATION {$tree = new SPTree($e1.text);}
-			   		| v=VAR eq=EQ e3=exp
+			   		| v=VAR eq=EQ e3=exp END
 			   		{ $tree = new SPTree($eq.text);
 			   		$tree.insertChild(new SPTree($v.text));
 			   		$tree.insertChild($e3.tree); }
@@ -61,8 +61,8 @@ exp returns [SPTree tree] :
 			   		{ $tree = $mmexp.tree;
 			   		$tree.insertChild($exp2.tree); }
 			   			
-			   | num_val=NUM_OR_VAR  //terminate with number or var
-			   		{ $tree = new SPTree($num_val.text); }
+			   | num_val=num_or_var  //terminate with number or var
+			   		{ $tree = $num_val.tree; }
 			   		
 			  ;
 min_max_exp returns [SPTree tree] :
@@ -72,6 +72,10 @@ min_max_exp returns [SPTree tree] :
 			  | mmoper=MIN_MAX OPEN_PAREN exp1=exp
 			  	{ $tree = new SPTree($mmoper.text);
 			  	$tree.insertChild($exp1.tree); }
+			  ;
+num_or_var returns [SPTree tree] :
+			  num=NUM { $tree = new SPTree($num.text); }
+			  | var=VAR { $tree = new SPTree($var.text); }
 			  ;
 
 // parser rules start with lowercase letters, lexer rules with uppercase
@@ -87,5 +91,5 @@ END: ';';
 EQ: '=';
 MIN_MAX: 'max' | 'min' | 'median' | 'average';
 VAR: [a-zA-Z]+;
-NUM_OR_VAR: [0-9]+ | [a-zA-Z]+;
+NUM: [0-9]+;
 
