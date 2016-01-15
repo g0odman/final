@@ -57,9 +57,8 @@ exp returns [SPTree tree] :
 			   		{ $tree = new SPTree($oper.text);
 			   		$tree.insertChild($exp1.tree); }
 			   		
-			   | mmexp=min_max_exp COMMA exp2=exp CLOSE_PAREN
-			   		{ $tree = $mmexp.tree;
-			   		$tree.insertChild($exp2.tree); }
+			   | mmexp=min_max_exp CLOSE_PAREN
+			   		{ $tree = $mmexp.tree; }
 			   			
 			   | num_val=num_or_var  //terminate with number or var
 			   		{ $tree = $num_val.tree; }
