@@ -169,10 +169,8 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
 }
 //Auxillary function, used by the sort in median
 int compare(const void *a, const void *b){
-    if(*((double*) a)>*((double*) b))
-        return 1;
-    else
-        return (int)(*(double *)b-*(double *)a);
+    double aa = *((double*) a), bb =  *((double*) b);
+    return (aa > bb) - (bb > aa);
 }
 
 double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg){
@@ -197,8 +195,9 @@ double average(SP_TREE *tree, bool *valid, SP_HASH variables, SP_HASH_ERROR *msg
     else{//case MEDIAN:
         qsort(arr,tree->size,sizeof(double),compare);
         if(tree->size %2)
-            ans = arr[tree->size/2];
-        ans = (arr[tree->size/2 -1] + arr[tree->size/2])/2;
+            ans = arr[(tree->size-1)/2];
+        else
+            ans = (arr[tree->size/2 -1] + arr[tree->size/2])/2;
     }
     free(arr);
     return ans;
