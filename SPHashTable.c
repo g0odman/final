@@ -28,6 +28,9 @@ SP_HASH spHashCreate(SP_HASH_ERROR* msg){
 		toRet->l[i] = listCreate();
 		if(toRet->l[i]==NULL){
 			if(msg!=NULL){ *msg=ALLOC_FAILED; };
+			//if failed, free memory:
+			for(int j=0; j++; j<i){ listDestroy(toRet->l[j]); }
+			free(toRet);
 			return NULL;
 		}
 	}
@@ -73,6 +76,7 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 			} else {
 				if(msg!=NULL){ *msg = SUCCESS; };
 			}
+			destroyElement(e);
 			return;
 		}
 	}
