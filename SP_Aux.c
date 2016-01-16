@@ -33,8 +33,8 @@ void parse(char * line,SP_HASH variables, char *s){
             sprintf(s, "%s\nres = %.2f\n",expr, out);
         else
             sprintf(s,"%s\nInvalid Result\n",expr);
-        free(expr);
     }
+    free(expr);
     spTreeDestroy(root);
     //In case function was successful
 }

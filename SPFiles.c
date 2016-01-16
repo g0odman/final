@@ -65,6 +65,7 @@ bool getVariables(int argc, char **argv, SP_HASH *variables){
             }
             //read from file:
             char * line = (char *) malloc(MAX_LINE_SIZE+1);
+            char * temp = line;
             if(line == NULL){//malloc failure
                 printf("Unexpected error occured!\n");
                 exit(EXIT_FAILURE);
@@ -79,8 +80,12 @@ bool getVariables(int argc, char **argv, SP_HASH *variables){
                 SP_HASH_ERROR msg;
                 //insert the var with the value into the hashtable:
                 spHashInsert(*variables,variable,val,&msg);
+                if(msg != SUCCESS) {
+                    printf("Unexpected error occured!\n");
+                    exit(EXIT_FAILURE);
+                }
             }
-            free(line);
+            free(temp);
             fclose(fp);
             return true;
         }
