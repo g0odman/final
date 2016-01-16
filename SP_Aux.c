@@ -156,8 +156,11 @@ double spTreeEval(SP_TREE *tree, bool * valid, SP_HASH variables, SP_HASH_ERROR*
     out = spTreeEval(tree->children[0],valid,variables,msg);
 
     //In case of a unary operator
-    if(tree->size == 1)
+    if(tree->size == 1){
+        if(tree->type == MINIMUM || tree->type == MAXIMUM)
+            return out;
         return operate(0,out,tree->type,valid);
+    }
 
     //then continue recursively calculating children,
     for(int i=1; i < tree->size; i++){
