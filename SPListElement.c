@@ -107,7 +107,7 @@ SPElementResult setElementStr(SPListElement data, char* str){
 }
 
 char* getElementStr(SPListElement data){
-	return (data == NULL ? NULL : copyStr(data->elementStr));
+	return (data == NULL ? NULL : data->elementStr);
 }
 
 SPElementResult setELementValue(SPListElement data, double newValue){
