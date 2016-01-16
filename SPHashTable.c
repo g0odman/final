@@ -29,7 +29,7 @@ SP_HASH spHashCreate(SP_HASH_ERROR* msg){
 		if(toRet->l[i]==NULL){
 			if(msg!=NULL){ *msg=ALLOC_FAILED; };
 			//if failed, free memory:
-			for(int j=0; j++; j<i){ listDestroy(toRet->l[j]); }
+			for(int j=0; j<i; ++j){ listDestroy(toRet->l[j]); }
 			free(toRet);
 			return NULL;
 		}
