@@ -18,7 +18,7 @@ void parse(char * line,SP_HASH variables, char *s){
     //Generate string representation
     //evaluate:
     char * expr = antiAntlr(root);
-    bracket(expr);
+    bracket(&expr);
     if(root->type==ASSIGNMENT){
         char *variable = getRootStr(root->children[0]);
         valid = assign(root, variables, &msg);
@@ -269,10 +269,10 @@ char *antiAntlr(SP_TREE *tree){
     return out;
 }
 
-void bracket(char * s){
-    if(s[0] != '('){
-        s = concat("(",s);
-        s = concat(s,")");
+void bracket(char **s){
+    if(*s[0] != '('){
+        *s = concat("(",*s);
+        *s = concat(*s,")");
     }
 }
 //Check that the function is the correct length and correct string

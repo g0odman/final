@@ -160,6 +160,6 @@ char *antiAntlr(SP_TREE *tree);
  *      char *s - expression to bracket.
  *
  */
-void bracket(char * s);
+void bracket(char **s);
 
 #endif /* SP_Aux_H_ */
