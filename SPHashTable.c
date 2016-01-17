@@ -70,15 +70,18 @@ void spHashInsert(SP_HASH h, char* str, double val, SP_HASH_ERROR* msg){
 	//if duplicate, change value:
 	for(SPListElement curr=listGetFirst(h->l[hash_index]);
 			curr!=NULL; curr=listGetNext(h->l[hash_index])){
-		if(isElementStrEquals(curr, getElementStr(e))){
+        char *temp = getElementStr(e);
+		if(isElementStrEquals(curr, temp)){
 			if(setELementValue(curr, val) != SP_ELEMENT_SUCCESS){
 				if(msg!=NULL){ *msg = UNKNOWN_FAILURE; };
 			} else {
 				if(msg!=NULL){ *msg = SUCCESS; };
 			}
 			destroyElement(e);
+            free(temp);
 			return;
 		}
+        free(temp);
 	}
 	//insert:
 	if(listInsertFirst(h->l[hash_index], e) != SP_LIST_SUCCESS){
