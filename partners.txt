@@ -1,7 +1,6 @@
-Full Name 1: 
-Id No 1: 
-User Name 1: 
-Full Name 2: 
-Id No 2: 
-User Name 2: 
-Final Project
+Full Name: Alexander Ar-Staelin & Uri Goodman
+Id No 1: 204805543
+User Name 1: arstaelin
+Id No 2: 315554907
+User Name 2: urigoodman
+Assignment No: 3
